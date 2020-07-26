@@ -1,0 +1,21 @@
+paths:
+  - ./
+layers:
+  - name: Controller
+    collectors:
+      - type: directory
+        regex: controller/.*
+  - name: Service
+    collectors:
+      - type: directory
+        regex: service/.*
+  - name: Repository
+    collectors:
+      - type: directory
+        regex: repository/.*
+ruleset:
+  Controller:
+    - Service
+  Service:
+    - Repository
+  Repository: ~

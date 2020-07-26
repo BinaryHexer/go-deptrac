@@ -1,0 +1,21 @@
+paths:
+  - ./
+layers:
+  - name: Application
+    collectors:
+      - type: directory
+        regex: app/.*
+  - name: Domain
+    collectors:
+      - type: directory
+        regex: domain/.*
+  - name: Infrastructure
+    collectors:
+      - type: directory
+        regex: infrastructure/.*
+ruleset:
+  Application:
+    - Domain
+  Domain: ~
+  Infrastructure:
+    - Domain

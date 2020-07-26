@@ -34,6 +34,7 @@ func (v *Validator) Validate(ignoreTests bool) (bool, []ValidationError, error) 
 	var errors []ValidationError
 
 	root := v.config.Paths[0]
+	Log.Printf("starting in root: %s", root)
 	// Walk through all the files and assign them layers
 	err := filepath.Walk(root, v.walkFn(ignoreTests))
 	if err != nil {
@@ -65,7 +66,8 @@ func (v *Validator) walkFn(ignoreTests bool) filepath.WalkFunc {
 
 		Log.Printf("processing (%s) in package (%s)", path, f.Name.String())
 
-		dir := filepath.Dir(path)
+		dir, err := filepath.Rel(v.config.baseDir, path)
+		dir = filepath.Dir(dir)
 		layers := v.layers(path)
 		file := File{
 			FilePath: path,
@@ -73,7 +75,9 @@ func (v *Validator) walkFn(ignoreTests bool) filepath.WalkFunc {
 			Imports:  f.Imports,
 			Layers:   layers,
 		}
+
 		if files, ok := v.dirs[dir]; ok {
+
 			v.dirs[dir] = append(files, file)
 		}
 		v.dirs[dir] = []File{file}
@@ -114,7 +118,7 @@ func (v *Validator) layers(path string) []LayerName {
 
 	for _, layer := range v.config.Layers {
 		for _, collector := range layer.Collectors {
-			if collector.Regex.MatchString(path) {
+			if collector.regex.MatchString(path) {
 				layers = append(layers, layer.Name)
 			}
 		}
@@ -138,8 +142,11 @@ func (v *Validator) validateImport(path string, importerLayers []LayerName, impo
 	var errors []ValidationError
 
 	root := v.config.Paths[0]
-	root = strings.TrimPrefix(root, `./`)
-	re := regexp.MustCompile(root + ".*")
+	root, err := filepath.Rel(v.config.baseDir, root)
+	if err != nil {
+		panic(err)
+	}
+	re := regexp.MustCompile(root + "/.*")
 
 	importPath := import_.Path.Value
 	importPath = strings.TrimSuffix(importPath, `"`)
@@ -147,6 +154,8 @@ func (v *Validator) validateImport(path string, importerLayers []LayerName, impo
 	importPath = re.FindString(importPath)
 	files, ok := v.dirs[importPath]
 	if !ok {
+		Log.Printf("root: %s", root)
+		Log.Printf("no files found for package: %s", importPath)
 		Log.Printf("no files found for package: %s", import_.Path.Value)
 	}
 
