@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/BinaryHexer/go-deptrac/validator"
 )
@@ -13,8 +14,19 @@ func main() {
 	if *debug {
 		validator.Log.SetOutput(os.Stderr)
 	}
+	flag.Parse()
+	var configPath string
+	if len(flag.Args()) > 1 {
+		configPath = flag.Args()[1]
+	} else {
+		var err error
+		configPath, err = filepath.Abs(flag.Arg(0))
+		if err != nil {
+			panic(err)
+		}
+	}
 
-	config := validator.ParseConfig()
+	config := validator.ParseConfig([]string{configPath})
 	v := validator.NewValidator(config)
 
 	fmt.Printf("[go-deptrac] checking %s\n", config.Paths[0])
