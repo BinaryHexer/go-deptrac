@@ -154,9 +154,7 @@ func (v *Validator) validateImport(path string, importerLayers []LayerName, impo
 	importPath = re.FindString(importPath)
 	files, ok := v.dirs[importPath]
 	if !ok {
-		Log.Printf("root: %s", root)
-		Log.Printf("no files found for package: %s", importPath)
-		Log.Printf("no files found for package: %s", import_.Path.Value)
+		Log.Printf("no files found for package: %s, (%s)", importPath, import_.Path.Value)
 	}
 
 	for _, importerLayer := range importerLayers {
