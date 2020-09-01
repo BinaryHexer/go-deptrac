@@ -87,7 +87,7 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of cond
 
 ## License
 
-This project is licensed under the GNU AGPLv3 License. Please read the [LICENSE](./LICENSE) for the complete details.
+This project is licensed under the MIT License. Please read the [LICENSE](./LICENSE) for the complete details.
 
 [references]: #
 [deptrac]: https://github.com/sensiolabs-de/deptrac
